@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -45,6 +45,7 @@
   h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; }
   .sub { color: var(--muted); font-size: 14px; margin: 0 0 18px; line-height: 1.4; }
   .row { margin: 0 0 18px; }
+  .label b { font-weight: 400; }
   .label { font-size: 15px; margin: 0 0 8px; display: flex; justify-content: space-between; }
   .label span { color: var(--muted); }
   .seg { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -74,63 +75,92 @@
   <iframe id="frame" src="https://tespush.com" allow="autoplay; fullscreen"
           allowfullscreen scrolling="no"></iframe>
 
-  <button id="gear" aria-label="Налаштування">⚙︎</button>
+  <button id="gear" aria-label="Settings">⚙︎</button>
 
   <div id="panel">
     <div class="card">
-      <h1>Налаштування екрана</h1>
-      <p class="sub">Зберігається в цьому браузері та в адресі сторінки, тож можна зробити окремі закладки під різні режими.</p>
+      <h1 data-i18n="title"></h1>
+      <p class="sub" data-i18n="sub"></p>
 
       <div class="row">
-        <div class="label">Розмір сторінки для адаптера <span id="srcLbl"></span></div>
+        <div class="label"><b data-i18n="size"></b> <span id="srcLbl"></span></div>
         <div class="seg" id="srcSeg">
           <button data-w="1280" data-h="720">1280×720</button>
           <button data-w="1600" data-h="900">1600×900</button>
           <button data-w="1920" data-h="1080">1920×1080</button>
           <button data-w="2560" data-h="1440">2560×1440</button>
-          <button data-w="0" data-h="0">Свій</button>
+          <button data-w="0" data-h="0" data-i18n="custom"></button>
         </div>
         <div class="custom" id="custom">
-          <input id="cw" type="number" inputmode="numeric" placeholder="ширина" />
-          <input id="ch" type="number" inputmode="numeric" placeholder="висота" />
+          <input id="cw" type="number" inputmode="numeric" data-i18n-ph="width" />
+          <input id="ch" type="number" inputmode="numeric" data-i18n-ph="height" />
         </div>
       </div>
 
       <div class="row">
-        <div class="label">Вписування</div>
+        <div class="label"><b data-i18n="fit"></b></div>
         <div class="seg" id="fitSeg">
-          <button data-fit="stretch">Розтягнути</button>
-          <button data-fit="contain">Пропорційно</button>
-          <button data-fit="cover">Заповнити</button>
+          <button data-fit="stretch" data-i18n="stretch"></button>
+          <button data-fit="contain" data-i18n="contain"></button>
+          <button data-fit="cover" data-i18n="cover"></button>
         </div>
       </div>
 
       <div class="row">
-        <div class="label">Масштаб картинки <span id="zoomLbl"></span></div>
+        <div class="label"><b data-i18n="zoom"></b> <span id="zoomLbl"></span></div>
         <input id="zoom" type="range" min="60" max="120" step="1" />
       </div>
 
       <div class="row">
-        <div class="label">Кнопка налаштувань</div>
+        <div class="label"><b data-i18n="gear"></b></div>
         <div class="seg" id="gearSeg">
-          <button data-gear="1">Показувати</button>
-          <button data-gear="0">Сховати</button>
+          <button data-gear="1" data-i18n="show"></button>
+          <button data-gear="0" data-i18n="hide"></button>
         </div>
       </div>
 
       <div class="actions">
-        <button id="reload">Перезапустити</button>
-        <button id="close" class="primary">Готово</button>
+        <button id="reload" data-i18n="restart"></button>
+        <button id="close" class="primary" data-i18n="done"></button>
       </div>
 
-      <p class="hint">Після зміни розміру натисніть «Перезапустити», щоб адаптер побачив нове вікно. Якщо кнопку сховано, відкрити налаштування можна, додавши до адреси <b>#settings</b>.</p>
+      <div class="row">
+        <div class="label"><b data-i18n="lang"></b></div>
+        <div class="seg" id="langSeg">
+          <button data-lang="en">English</button>
+          <button data-lang="uk">Українська</button>
+        </div>
+      </div>
+
+      <p class="hint" data-i18n-html="hint"></p>
     </div>
   </div>
 
 <script>
 (function () {
   var KEY = 't2c-wrapper-v1';
-  var DEF = { w: 1920, h: 1080, fit: 'stretch', zoom: 100, gear: 1 };
+  var sysLang = /^(uk|ru)/i.test(navigator.language || '') ? 'uk' : 'en';
+  var DEF = { w: 1920, h: 1080, fit: 'stretch', zoom: 100, gear: 1, lang: sysLang };
+  var T = {
+    en: {
+      title: 'Display settings',
+      sub: 'Saved in this browser and in the page URL, so you can bookmark different setups.',
+      size: 'Page size for the adapter', custom: 'Custom', width: 'width', height: 'height',
+      fit: 'Fit mode', stretch: 'Stretch', contain: 'Keep ratio', cover: 'Fill',
+      zoom: 'Picture scale', gear: 'Settings button', show: 'Show', hide: 'Hide',
+      lang: 'Language', restart: 'Restart', done: 'Done',
+      hint: 'After changing the size, tap “Restart” so the adapter sees the new window. If the button is hidden, open settings by adding <b>#settings</b> to the URL.'
+    },
+    uk: {
+      title: 'Налаштування екрана',
+      sub: 'Зберігається в цьому браузері та в адресі сторінки, тож можна зробити окремі закладки під різні режими.',
+      size: 'Розмір сторінки для адаптера', custom: 'Свій', width: 'ширина', height: 'висота',
+      fit: 'Вписування', stretch: 'Розтягнути', contain: 'Пропорційно', cover: 'Заповнити',
+      zoom: 'Масштаб картинки', gear: 'Кнопка налаштувань', show: 'Показувати', hide: 'Сховати',
+      lang: 'Мова', restart: 'Перезапустити', done: 'Готово',
+      hint: 'Після зміни розміру натисніть «Перезапустити», щоб адаптер побачив нове вікно. Якщо кнопку сховано, відкрити налаштування можна, додавши до адреси <b>#settings</b>.'
+    }
+  };
 
   function load() {
     var s = Object.assign({}, DEF);
@@ -141,6 +171,8 @@
     if (q.get('fit')) s.fit = q.get('fit');
     if (q.get('zoom')) s.zoom = +q.get('zoom');
     if (q.get('gear')) s.gear = +q.get('gear');
+    if (q.get('lang')) s.lang = q.get('lang');
+    if (!T[s.lang]) s.lang = DEF.lang;
     if (!(s.w >= 320 && s.w <= 4096)) s.w = DEF.w;
     if (!(s.h >= 240 && s.h <= 4096)) s.h = DEF.h;
     if (['stretch', 'contain', 'cover'].indexOf(s.fit) < 0) s.fit = DEF.fit;
@@ -154,7 +186,7 @@
 
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
-    var q = new URLSearchParams({ w: S.w, h: S.h, fit: S.fit, zoom: S.zoom, gear: S.gear });
+    var q = new URLSearchParams({ w: S.w, h: S.h, fit: S.fit, zoom: S.zoom, gear: S.gear, lang: S.lang });
     try { history.replaceState(null, '', location.pathname + '?' + q + location.hash); } catch (e) {}
   }
 
@@ -178,7 +210,18 @@
     for (var i = 0; i < bs.length; i++) bs[i].classList.toggle('on', bs[i].getAttribute(attr) === String(val));
   }
 
+  function translate() {
+    var d = T[S.lang];
+    document.documentElement.lang = S.lang;
+    document.querySelectorAll('[data-i18n]').forEach(function (el) { el.textContent = d[el.getAttribute('data-i18n')]; });
+    document.querySelectorAll('[data-i18n-ph]').forEach(function (el) { el.placeholder = d[el.getAttribute('data-i18n-ph')]; });
+    document.querySelectorAll('[data-i18n-html]').forEach(function (el) { el.innerHTML = d[el.getAttribute('data-i18n-html')]; });
+    gear.setAttribute('aria-label', d.title);
+  }
+
   function render() {
+    translate();
+    mark('langSeg', 'data-lang', S.lang);
     var preset = [[1280,720],[1600,900],[1920,1080],[2560,1440]].some(function (p) { return p[0] === S.w && p[1] === S.h; });
     mark('srcSeg', 'data-w', preset ? S.w : 0);
     $('custom').classList.toggle('on', !preset);
@@ -212,6 +255,10 @@
   $('gearSeg').addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
     S.gear = +b.getAttribute('data-gear'); update();
+  });
+  $('langSeg').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    S.lang = b.getAttribute('data-lang'); update();
   });
   $('zoom').addEventListener('input', function () {
     S.zoom = +this.value; $('zoomLbl').textContent = S.zoom + '%'; save(); fit();
