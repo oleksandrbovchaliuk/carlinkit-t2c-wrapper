@@ -16,6 +16,7 @@ A single-file wrapper that fixes the stretched or cropped CarPlay picture of the
 - Zoom slider (60–120%)
 - "Restart" button that reconnects the stream without reloading the page
 - The ⚙︎ button can be hidden; open settings by adding `#settings` to the URL
+- English and Ukrainian interface (auto-detected, switchable in settings)
 - Settings are saved in the browser and in the URL, so you can bookmark different setups
 
 ### Usage
@@ -24,7 +25,7 @@ A single-file wrapper that fixes the stretched or cropped CarPlay picture of the
 2. Open `https://oleksandrbovchaliuk.github.io/carlinkit-t2c-wrapper/` in the Tesla browser instead of `tespush.com`.
 3. Bookmark it.
 
-URL parameters: `w`, `h` (page size), `fit` (`stretch` | `contain` | `cover`), `zoom` (60–120), `gear` (`1` | `0`).
+URL parameters: `w`, `h` (page size), `fit` (`stretch` | `contain` | `cover`), `zoom` (60–120), `gear` (`1` | `0`), `lang` (`en` | `uk`).
 Example: `?w=1920&h=1080&fit=contain&zoom=100`
 
 ### Notes
@@ -47,6 +48,7 @@ Example: `?w=1920&h=1080&fit=contain&zoom=100`
 - Повзунок масштабу (60–120%)
 - Кнопка «Перезапустити» перепідключає потік без перезавантаження сторінки
 - Кнопку ⚙︎ можна сховати, тоді налаштування відкриваються, якщо додати до адреси `#settings`
+- Інтерфейс англійською та українською (визначається автоматично, можна перемкнути в налаштуваннях)
 - Налаштування зберігаються в браузері та в адресі, тож можна зробити кілька закладок під різні режими
 
 ### Як користуватися
@@ -55,7 +57,7 @@ Example: `?w=1920&h=1080&fit=contain&zoom=100`
 2. Відкрийте в браузері Тесли `https://oleksandrbovchaliuk.github.io/carlinkit-t2c-wrapper/` замість `tespush.com`.
 3. Додайте сторінку в закладки.
 
-Параметри адреси: `w`, `h` (розмір сторінки), `fit` (`stretch` | `contain` | `cover`), `zoom` (60–120), `gear` (`1` | `0`).
+Параметри адреси: `w`, `h` (розмір сторінки), `fit` (`stretch` | `contain` | `cover`), `zoom` (60–120), `gear` (`1` | `0`), `lang` (`en` | `uk`).
 Приклад: `?w=1920&h=1080&fit=contain&zoom=100`
 
 ### Примітки
