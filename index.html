@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="referrer" content="no-referrer" />
+<title>CarPlay</title>
+<style>
+  :root {
+    --bg: #000;
+    --panel: #16181b;
+    --line: #2a2d31;
+    --text: #e8e8e6;
+    --muted: #8b8f94;
+    --accent: #3e8bff;
+  }
+  html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    background: var(--bg); overflow: hidden;
+    font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+  }
+  #frame {
+    position: fixed; top: 0; left: 0; border: 0; display: block;
+    transform-origin: 0 0;
+  }
+  #gear {
+    position: fixed; top: 8px; right: 8px; z-index: 10;
+    width: 44px; height: 44px; border-radius: 22px; border: 0;
+    background: rgba(40, 42, 46, .55); color: #fff; font-size: 22px;
+    line-height: 44px; text-align: center; padding: 0; cursor: pointer;
+  }
+  #gear.hidden { display: none; }
+  #panel {
+    position: fixed; inset: 0; z-index: 20; display: none;
+    background: rgba(0, 0, 0, .6);
+    align-items: center; justify-content: center;
+  }
+  #panel.open { display: flex; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+    width: min(560px, 92vw); max-height: 90vh; overflow-y: auto;
+    padding: 22px 24px; box-sizing: border-box;
+  }
+  h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 14px; margin: 0 0 18px; line-height: 1.4; }
+  .row { margin: 0 0 18px; }
+  .label { font-size: 15px; margin: 0 0 8px; display: flex; justify-content: space-between; }
+  .label span { color: var(--muted); }
+  .seg { display: flex; flex-wrap: wrap; gap: 8px; }
+  .seg button {
+    flex: 1 1 auto; min-height: 48px; padding: 0 14px; font-size: 15px;
+    background: #202327; color: var(--text); border: 1px solid var(--line);
+    border-radius: 10px; cursor: pointer;
+  }
+  .seg button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  input[type=range] { width: 100%; height: 40px; accent-color: var(--accent); }
+  .custom { display: none; gap: 8px; margin-top: 8px; }
+  .custom.on { display: flex; }
+  .custom input {
+    flex: 1; min-height: 44px; font-size: 16px; padding: 0 10px; box-sizing: border-box;
+    background: #202327; color: var(--text); border: 1px solid var(--line); border-radius: 10px;
+  }
+  .actions { display: flex; gap: 10px; margin-top: 6px; }
+  .actions button {
+    flex: 1; min-height: 52px; font-size: 16px; border-radius: 12px; cursor: pointer;
+    border: 1px solid var(--line); background: #202327; color: var(--text);
+  }
+  .actions .primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .hint { color: var(--muted); font-size: 13px; line-height: 1.45; margin: 14px 0 0; }
+</style>
+</head>
+<body>
+  <iframe id="frame" src="https://tespush.com" allow="autoplay; fullscreen"
+          allowfullscreen scrolling="no"></iframe>
+
+  <button id="gear" aria-label="Налаштування">⚙︎</button>
+
+  <div id="panel">
+    <div class="card">
+      <h1>Налаштування екрана</h1>
+      <p class="sub">Зберігається в цьому браузері та в адресі сторінки, тож можна зробити окремі закладки під різні режими.</p>
+
+      <div class="row">
+        <div class="label">Розмір сторінки для адаптера <span id="srcLbl"></span></div>
+        <div class="seg" id="srcSeg">
+          <button data-w="1280" data-h="720">1280×720</button>
+          <button data-w="1600" data-h="900">1600×900</button>
+          <button data-w="1920" data-h="1080">1920×1080</button>
+          <button data-w="2560" data-h="1440">2560×1440</button>
+          <button data-w="0" data-h="0">Свій</button>
+        </div>
+        <div class="custom" id="custom">
+          <input id="cw" type="number" inputmode="numeric" placeholder="ширина" />
+          <input id="ch" type="number" inputmode="numeric" placeholder="висота" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="label">Вписування</div>
+        <div class="seg" id="fitSeg">
+          <button data-fit="stretch">Розтягнути</button>
+          <button data-fit="contain">Пропорційно</button>
+          <button data-fit="cover">Заповнити</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="label">Масштаб картинки <span id="zoomLbl"></span></div>
+        <input id="zoom" type="range" min="60" max="120" step="1" />
+      </div>
+
+      <div class="row">
+        <div class="label">Кнопка налаштувань</div>
+        <div class="seg" id="gearSeg">
+          <button data-gear="1">Показувати</button>
+          <button data-gear="0">Сховати</button>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="reload">Перезапустити</button>
+        <button id="close" class="primary">Готово</button>
+      </div>
+
+      <p class="hint">Після зміни розміру натисніть «Перезапустити», щоб адаптер побачив нове вікно. Якщо кнопку сховано, відкрити налаштування можна, додавши до адреси <b>#settings</b>.</p>
+    </div>
+  </div>
+
+<script>
+(function () {
+  var KEY = 't2c-wrapper-v1';
+  var DEF = { w: 1920, h: 1080, fit: 'stretch', zoom: 100, gear: 1 };
+
+  function load() {
+    var s = Object.assign({}, DEF);
+    try { Object.assign(s, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
+    var q = new URLSearchParams(location.search);
+    if (q.get('w')) s.w = +q.get('w');
+    if (q.get('h')) s.h = +q.get('h');
+    if (q.get('fit')) s.fit = q.get('fit');
+    if (q.get('zoom')) s.zoom = +q.get('zoom');
+    if (q.get('gear')) s.gear = +q.get('gear');
+    if (!(s.w >= 320 && s.w <= 4096)) s.w = DEF.w;
+    if (!(s.h >= 240 && s.h <= 4096)) s.h = DEF.h;
+    if (['stretch', 'contain', 'cover'].indexOf(s.fit) < 0) s.fit = DEF.fit;
+    if (!(s.zoom >= 60 && s.zoom <= 120)) s.zoom = DEF.zoom;
+    return s;
+  }
+
+  var S = load();
+  var $ = function (id) { return document.getElementById(id); };
+  var frame = $('frame'), panel = $('panel'), gear = $('gear');
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+    var q = new URLSearchParams({ w: S.w, h: S.h, fit: S.fit, zoom: S.zoom, gear: S.gear });
+    try { history.replaceState(null, '', location.pathname + '?' + q + location.hash); } catch (e) {}
+  }
+
+  function fit() {
+    var vw = document.documentElement.clientWidth;
+    var vh = document.documentElement.clientHeight;
+    var sx = vw / S.w, sy = vh / S.h;
+    if (S.fit === 'contain') sx = sy = Math.min(sx, sy);
+    if (S.fit === 'cover') sx = sy = Math.max(sx, sy);
+    var z = S.zoom / 100;
+    sx *= z; sy *= z;
+    var dx = (vw - S.w * sx) / 2, dy = (vh - S.h * sy) / 2;
+    frame.style.width = S.w + 'px';
+    frame.style.height = S.h + 'px';
+    frame.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + sx + ',' + sy + ')';
+    gear.classList.toggle('hidden', !S.gear);
+  }
+
+  function mark(segId, attr, val) {
+    var bs = $(segId).querySelectorAll('button');
+    for (var i = 0; i < bs.length; i++) bs[i].classList.toggle('on', bs[i].getAttribute(attr) === String(val));
+  }
+
+  function render() {
+    var preset = [[1280,720],[1600,900],[1920,1080],[2560,1440]].some(function (p) { return p[0] === S.w && p[1] === S.h; });
+    mark('srcSeg', 'data-w', preset ? S.w : 0);
+    $('custom').classList.toggle('on', !preset);
+    $('cw').value = S.w; $('ch').value = S.h;
+    $('srcLbl').textContent = S.w + '×' + S.h;
+    mark('fitSeg', 'data-fit', S.fit);
+    mark('gearSeg', 'data-gear', S.gear);
+    $('zoom').value = S.zoom;
+    $('zoomLbl').textContent = S.zoom + '%';
+  }
+
+  function update() { save(); render(); fit(); }
+
+  $('srcSeg').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    var w = +b.getAttribute('data-w'), h = +b.getAttribute('data-h');
+    if (w) { S.w = w; S.h = h; update(); }
+    else { $('custom').classList.add('on'); mark('srcSeg', 'data-w', 0); }
+  });
+  function onCustom() {
+    var w = +$('cw').value, h = +$('ch').value;
+    if (w >= 320 && w <= 4096 && h >= 240 && h <= 4096) { S.w = w; S.h = h; save(); fit(); $('srcLbl').textContent = w + '×' + h; }
+  }
+  $('cw').addEventListener('change', onCustom);
+  $('ch').addEventListener('change', onCustom);
+
+  $('fitSeg').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    S.fit = b.getAttribute('data-fit'); update();
+  });
+  $('gearSeg').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    S.gear = +b.getAttribute('data-gear'); update();
+  });
+  $('zoom').addEventListener('input', function () {
+    S.zoom = +this.value; $('zoomLbl').textContent = S.zoom + '%'; save(); fit();
+  });
+
+  function open() { render(); panel.classList.add('open'); }
+  function close() {
+    panel.classList.remove('open');
+    if (location.hash === '#settings') history.replaceState(null, '', location.pathname + location.search);
+  }
+  gear.addEventListener('click', open);
+  $('close').addEventListener('click', close);
+  panel.addEventListener('click', function (e) { if (e.target === panel) close(); });
+  $('reload').addEventListener('click', function () {
+    frame.src = 'about:blank';
+    setTimeout(function () { frame.src = 'https://tespush.com'; }, 150);
+    close();
+  });
+
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', fit);
+  window.addEventListener('hashchange', function () { if (location.hash === '#settings') open(); });
+
+  save(); fit();
+  if (location.hash === '#settings') open();
+})();
+</script>
+</body>
+</html>
