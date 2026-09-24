@@ -69,6 +69,22 @@
   }
   .actions .primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .hint { color: var(--muted); font-size: 13px; line-height: 1.45; margin: 14px 0 0; }
+  .actions {
+    position: sticky; bottom: -22px; background: var(--panel);
+    padding: 10px 0 12px; margin-bottom: -12px; z-index: 1;
+  }
+  @media (max-height: 760px) {
+    .card { padding: 14px 16px; max-height: 94vh; }
+    h1 { font-size: 18px; }
+    .sub, .hint { display: none; }
+    .row { margin: 0 0 10px; }
+    .label { font-size: 14px; margin: 0 0 6px; }
+    .seg { gap: 6px; }
+    .seg button { min-height: 40px; font-size: 14px; padding: 0 10px; }
+    input[type=range] { height: 30px; }
+    .actions { bottom: -14px; padding: 8px 0 10px; }
+    .actions button { min-height: 44px; }
+  }
 </style>
 </head>
 <body>
